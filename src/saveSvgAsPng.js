@@ -1,5 +1,3 @@
-import 'babel-polyfill';
-
 (function() {
   const out$ = typeof exports != 'undefined' && exports || typeof define != 'undefined' && {} || this;
   if (typeof define !== 'undefined') define(() => out$);
