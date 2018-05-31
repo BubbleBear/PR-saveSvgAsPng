@@ -97,6 +97,7 @@
       <div class=preview></div>
     </div>
   </div>
+  
 </script>
 
 <div class=container>
@@ -306,6 +307,12 @@
         <p>@font-face declaration has to be inside document stylesheets (not in the external `link` tag)</p>
         <p>Only first `url()` is inlined into svg (don't have multiple urls in the font-face).</p>
       </div>
+    </li>
+
+    <li id=embedded-png-with-promise>
+      <svg width=200 height=200>
+        <image xlink:href=image.png x=50 y=50 width=100 height=100></image>
+      </svg>
     </li>
   </ul>
 </div>

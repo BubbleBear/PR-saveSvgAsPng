@@ -289,7 +289,7 @@
       canvg
     } = options || {};
 
-    const convertToPng = (src, w, h) => {
+    const convertToImage = (src, w, h) => {
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
       const pixelRatio = window.devicePixelRatio || 1;
@@ -309,24 +309,29 @@
         context.fillRect(0, 0, canvas.width, canvas.height);
       }
 
-      let png;
+      let image;
       try {
-        png = canvas.toDataURL(encoderType, encoderOptions);
+        image = canvas.toDataURL(encoderType, encoderOptions);
       } catch (e) {
         if ((typeof SecurityError !== 'undefined' && e instanceof SecurityError) || e.name === 'SecurityError') {
           console.error('Rendered SVG images cannot be downloaded in this browser.');
           return;
         } else throw e;
       }
-      done(png);
+      typeof done === 'function' && done(image);
+      return Promise.resolve(image);
     }
 
-    if (canvg) out$.prepareSvg(el, options, convertToPng);
-    else out$.svgAsDataUri(el, options, uri => {
+    if (canvg) out$.prepareSvg(el, options, convertToImage);
+    else return out$.svgAsDataUri(el, options, uri => {
       const image = new Image();
-      image.onload = () => convertToPng(image, image.width, image.height);
       image.onerror = () => console.error(`There was an error loading the data URI as an image on the following SVG\n${window.atob(uri.slice(26))}Open the following link to see browser's diagnosis\n${uri}`);
       image.src = uri;
+      return new Promise((resolve, reject) => {
+        image.onload = () => {
+          resolve(convertToImage(image, image.width, image.height));
+        };
+      });
     });
   };
 

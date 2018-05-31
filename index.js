@@ -32,6 +32,21 @@ function inlineTest(title, $el, saveOptions, testOptions) {
   row.find('.save').click(() => saveSvgAsPng(canvas, 'test.png', saveOptions));
 }
 
+function promisifyTest(title, $el, saveOptions, testOptions) {
+  const svg = $el.html();
+  const template = $('#inline-template').html();
+  const row = $el.html(template);
+  row.find('h2').text(title);
+  row.find('.canvas').html(svg);
+
+  const canvas = row.find(testOptions && testOptions.selector || 'svg')[0];
+  svgAsPngUri(canvas, saveOptions).then(uri => 
+    row.find('.preview').html('<img src="' + uri + '" />')
+  );
+
+  row.find('.save').click(() => saveSvgAsPng(canvas, 'test.png', saveOptions));
+}
+
 inlineTest('Directly in the HTML', $('#inline'));
 inlineTest('With linked PNG image', $('#embedded-png'));
 inlineTest('With linked SVG image', $('#embedded-svg'));
@@ -71,6 +86,7 @@ inlineTest('When setting xmlns on foreign object children', $('#xmlns-override')
 inlineTest('When using HTML entites', $('#entities'));
 inlineTest('Transformed text', $('#transformed-text'));
 inlineTest('With custom fonts', $('#custom-font'));
+promisifyTest('Primisify linked PNG image', $('#embedded-png-with-promise'));
 
 const $sandbox = $('#sandbox');
 $sandbox.find('.render').click(() => {
